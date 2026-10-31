@@ -9,7 +9,8 @@
 <style>
 :root{--bg:#f5f0e4;--card:#fcf9f0;--ink:#22302a;--mut:#5f6e64;--g:#2b6b55;--gold:#b3924a;--tq:#3f8a86;--tint:#e6efe8;--red:#b85c55;--redt:#f6e4e1;--ok:#3f8a5a;--bad:#b85c55}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
-body{font-family:Cairo,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:84px;perspective:1200px}
+body{font-family:Cairo,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:84px}
+main{perspective:1200px}
 header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(245,240,228,.92);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(0,0,0,.05)}
 .logo{display:flex;align-items:center;gap:8px;font-family:Amiri,serif;font-size:2.1rem;color:var(--g);line-height:1}
 .logo .orn{color:var(--gold);font-size:1rem}
@@ -61,7 +62,7 @@ header{box-shadow:0 8px 18px rgba(34,48,42,.08)}.logo img{filter:drop-shadow(0 4
 .lsub{color:var(--mut);font-weight:700;margin:-.4em 0 20px;position:relative;line-height:1.9;word-spacing:.25em}
 .gbtn{position:relative;display:flex;align-items:center;gap:12px;background:#fff;border:0;border-radius:99px;padding:14px 28px;font:700 1rem Cairo;color:#3c4043;cursor:pointer;box-shadow:0 6px 0 #d8d2c0,0 16px 30px rgba(34,48,42,.18);transition:transform .2s}
 .gbtn:hover{transform:translateY(-3px) rotateX(8deg)}.gbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #d8d2c0}
-#md{position:fixed;inset:0;z-index:50;background:rgba(34,48,42,.45);backdrop-filter:blur(4px);display:grid;place-items:center;perspective:900px}#md[hidden]{display:none}
+#md{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;height:100dvh;z-index:50;background:rgba(34,48,42,.45);backdrop-filter:blur(4px);display:grid;place-items:center;perspective:900px}#md[hidden]{display:none}
 .mc{background:var(--card);border-radius:28px;padding:30px 26px;text-align:center;max-width:320px;box-shadow:0 30px 60px rgba(0,0,0,.35),0 0 0 3px #b3924a;animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
 @keyframes pop{from{opacity:0;transform:rotateX(70deg) translateZ(-200px) scale(.6)}}
 .mi{font-size:3.4rem;animation:sway2 3s ease-in-out infinite}@keyframes sway2{50%{transform:rotateY(180deg) scale(1.15)}}
