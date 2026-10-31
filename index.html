@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>آثر — مسابقة إيمانية يومية</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+:root{--bg:#f5f0e4;--card:#fcf9f0;--ink:#22302a;--mut:#5f6e64;--g:#2b6b55;--gold:#b3924a;--tq:#3f8a86;--tint:#e6efe8;--red:#b85c55;--redt:#f6e4e1;--ok:#3f8a5a;--bad:#b85c55}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Cairo,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:84px;perspective:1200px}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(245,240,228,.92);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(0,0,0,.05)}
+.logo{display:flex;align-items:center;gap:8px;font-family:Amiri,serif;font-size:2.1rem;color:var(--g);line-height:1}
+.logo .orn{color:var(--gold);font-size:1rem}
+.btn{font:700 .95rem Cairo;border:0;border-radius:14px;padding:12px 22px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn-g{background:var(--g);color:#fff;box-shadow:0 6px 0 #1f4d3a,0 12px 20px rgba(43,107,85,.2)}
+.btn-g:active{transform:translateY(4px);box-shadow:0 2px 0 #1f4d3a}
+.btn-g:disabled{background:#a9b8ad;box-shadow:0 4px 0 #8c9b90;cursor:not-allowed}
+.btn-out{background:var(--redt);color:var(--red);padding:8px 14px;font-size:.85rem}
+.btn-gold{background:var(--gold);color:#fff}
+main{max-width:720px;margin:0 auto;padding:20px 16px}
+.view{display:none}.view.on{display:block;animation:in .5s}
+@keyframes in{from{opacity:0;transform:translateY(14px) rotateX(8deg)}}
+.card{background:var(--card);border-radius:24px;padding:24px;box-shadow:0 10px 30px rgba(34,48,42,.08);transform-style:preserve-3d;transition:transform .15s;margin-bottom:18px;text-align:center}
+.card h1{font-size:1.7rem;margin:10px 0}.card p{color:var(--mut);margin-bottom:16px}
+.clock3d{width:130px;height:130px;margin:0 auto;animation:spin 6s ease-in-out infinite;transform-style:preserve-3d;filter:drop-shadow(0 14px 12px rgba(0,0,0,.15))}
+@keyframes spin{0%,100%{transform:translateZ(45px) rotateY(-22deg)}50%{transform:translateZ(45px) rotateY(22deg)}}
+.hand{transform-origin:50px 50px;animation:tick 12s linear infinite}.hand.s{animation-duration:3s}
+@keyframes tick{to{transform:rotate(360deg)}}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-weight:700}
+.timer{position:relative;width:64px;height:64px}.timer b{position:absolute;inset:0;display:grid;place-items:center;font-size:1.1rem;color:var(--g)}
+.tag{background:var(--tint);color:var(--g);padding:4px 12px;border-radius:99px;font-size:.8rem;font-weight:700}
+.q{font-size:1.25rem;font-weight:700;line-height:1.8;margin:6px 0 18px}
+.opt{display:block;width:100%;text-align:right;background:var(--bg);border:2px solid transparent;border-radius:16px;padding:14px 16px;margin-bottom:10px;font:600 1rem Cairo;color:var(--ink);cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 0 #ddd5c0}
+.opt:hover{transform:translateZ(20px) translateY(-2px)}
+.opt.ok{background:#dcefe2;border-color:var(--ok)}.opt.bad{background:var(--redt);border-color:var(--bad)}
+.bar{height:8px;background:#e5dfcf;border-radius:9px;overflow:hidden;margin-bottom:16px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--tq));transition:width .4s}
+.big{font:800 3rem Cairo;color:var(--g)}.gold{color:var(--gold)}
+.cert img{width:100%;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);margin:10px 0;cursor:pointer}
+nav{position:fixed;bottom:0;inset-inline:0;z-index:20;display:flex;justify-content:space-around;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:var(--card);box-shadow:0 -6px 20px rgba(34,48,42,.08);border-radius:22px 22px 0 0}
+nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;font-weight:700;color:var(--mut);padding:6px;border-radius:14px;cursor:pointer;transition:.2s}
+nav a svg{width:26px;height:26px;transition:transform .3s}nav a.on{color:var(--g);background:var(--tint)}nav a.on svg{transform:translateY(-3px) scale(1.15) rotateY(360deg)}
+nav a.lock{color:#aaa}
+.note{background:#fff7e0;color:#7a5d12;border-radius:12px;padding:10px;font-size:.82rem;margin:10px 0}
+#login{text-align:center;padding-top:8vh}
+
+body.lg header,body.lg nav{display:none}body.lg{padding:0}body.lg main{max-width:none;padding:0}
+header{box-shadow:0 8px 18px rgba(34,48,42,.08)}.logo img{filter:drop-shadow(0 4px 4px rgba(0,0,0,.25));transition:transform .6s}.logo:hover img{transform:rotateY(360deg)}
+.lw{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:24px;text-align:center;position:relative;overflow:hidden;perspective:1000px;background:radial-gradient(circle at 50% 38%,#e6efe8 0,#f5f0e4 55%,#ece4cf 100%)}
+.lw:before{content:"";position:absolute;inset:-20%;opacity:.5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cpath d='M45 5l9 22 23-9-9 23 22 9-22 9 9 23-23-9-9 22-9-22-23 9 9-23-22-9 22-9-9-23 23 9z' fill='none' stroke='%23b3924a' stroke-opacity='.35'/%3E%3C/svg%3E");animation:drift 40s linear infinite}
+@keyframes drift{to{transform:translate(90px,90px)}}
+#stars i{position:absolute;bottom:-20px;border-radius:50%;background:#d9b862;box-shadow:0 0 10px #d9b862;opacity:.7;animation:up linear infinite}
+@keyframes up{to{transform:translateY(-110vh) translateX(30px);opacity:0}}
+.scene{position:relative;width:min(66vw,300px);aspect-ratio:1;transform-style:preserve-3d;transition:transform .2s;margin-bottom:6px}
+.seal{width:100%;position:relative;transform:translateZ(30px);animation:sway 7s ease-in-out infinite;filter:drop-shadow(0 30px 24px rgba(31,77,58,.45)) drop-shadow(0 0 28px rgba(179,146,74,.35))}
+@keyframes sway{0%,100%{transform:translateZ(30px) rotateY(-22deg) rotateX(6deg) translateY(0)}50%{transform:translateZ(30px) rotateY(22deg) rotateX(-4deg) translateY(-12px)}}
+.ring{position:absolute;inset:-3%;border-radius:50%;border:2px dashed #b3924a;opacity:.55;animation:rot 24s linear infinite}.r2{inset:-8%;border-color:#3f8a86;animation-direction:reverse;animation-duration:36s;opacity:.35}
+@keyframes rot{to{transform:translateZ(-20px) rotate(360deg)}}
+.ltitle{font:700 4.4rem Amiri,serif;line-height:1.9;padding:0 .25em;margin-top:-.5em;background:linear-gradient(180deg,#d9b862,#9a7a2e);-webkit-background-clip:text;color:transparent;text-shadow:0 8px 14px rgba(0,0,0,.12);position:relative}
+.lsub{color:var(--mut);font-weight:700;margin:-.4em 0 20px;position:relative;line-height:1.9;word-spacing:.25em}
+.gbtn{position:relative;display:flex;align-items:center;gap:12px;background:#fff;border:0;border-radius:99px;padding:14px 28px;font:700 1rem Cairo;color:#3c4043;cursor:pointer;box-shadow:0 6px 0 #d8d2c0,0 16px 30px rgba(34,48,42,.18);transition:transform .2s}
+.gbtn:hover{transform:translateY(-3px) rotateX(8deg)}.gbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #d8d2c0}
+#md{position:fixed;inset:0;z-index:50;background:rgba(34,48,42,.45);backdrop-filter:blur(4px);display:grid;place-items:center;perspective:900px}#md[hidden]{display:none}
+.mc{background:var(--card);border-radius:28px;padding:30px 26px;text-align:center;max-width:320px;box-shadow:0 30px 60px rgba(0,0,0,.35),0 0 0 3px #b3924a;animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{opacity:0;transform:rotateX(70deg) translateZ(-200px) scale(.6)}}
+.mi{font-size:3.4rem;animation:sway2 3s ease-in-out infinite}@keyframes sway2{50%{transform:rotateY(180deg) scale(1.15)}}
+.mc h2{color:var(--g);margin:6px 0}.mc p{font:700 1.15rem Amiri,serif;color:var(--gold);margin-bottom:16px}
+#tt{position:fixed;bottom:96px;inset-inline:16px;z-index:60;background:#22302a;color:#fff;padding:12px 16px;border-radius:14px;font-size:.85rem;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.3)}#tt[hidden]{display:none}
+.faith{margin-top:8px}.faith h2{color:var(--g);text-align:center;margin-bottom:8px;font:700 1.9rem Amiri,serif}.faith>p{text-align:center;color:var(--mut);line-height:2;margin-bottom:16px}
+.ev{display:grid;gap:14px;transform-style:preserve-3d}.e{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 8px 22px rgba(34,48,42,.09);border-inline-start:5px solid var(--gold);transition:transform .15s}
+.e .k{display:inline-block;background:var(--tint);color:var(--g);font-size:.75rem;font-weight:800;padding:2px 12px;border-radius:99px}.e .t{line-height:2;margin:8px 0;font-weight:600}.e .t.v{font:700 1.3rem Amiri,serif}.e small{color:var(--mut);font-weight:700}
+html.gold{--bg:#f7f0da;--card:#fffaea;--ink:#3a2c0a;--mut:#7d6a38;--g:#a8791c;--tq:#d4ae4f;--tint:#f2e5bd;--gold:#8a6414}
+.gold .btn-g{box-shadow:0 6px 0 #7a5610,0 12px 20px rgba(168,121,28,.3)}.gold .btn-g:active{box-shadow:0 2px 0 #7a5610}.gold header{background:rgba(247,240,218,.92)}
+.gold .lw{background:radial-gradient(circle at 50% 38%,#f6e7b4 0,#f7f0da 55%,#ecdcaa 100%)}.gold .seal{filter:drop-shadow(0 30px 24px rgba(138,100,20,.45)) drop-shadow(0 0 34px rgba(217,180,74,.65))}
+.gold .r2{border-color:#d4ae4f}.gold .mc{box-shadow:0 30px 60px rgba(0,0,0,.35),0 0 0 3px #d4ae4f}.gold .opt{box-shadow:0 4px 0 #e6d6a2}.gold .bar{background:#eadcab}
+</style></head><body>
+<header><div class="logo"><img id="hl" alt="" height="46">آثر</div><button class="btn btn-out" id="out" hidden>تسجيل الخروج</button></header>
+<main>
+<section class="view" id="login"><div class="lw" id="lw"><div id="stars"></div><div class="scene" id="scene">
+<div class="ring r1"></div><div class="ring r2"></div><img id="ls" class="seal" alt="آثر"></div>
+<div class="ltitle">آثر</div><p class="lsub">علمٌ خفيف&nbsp; ✦ &nbsp;أثرٌ يبقى</p>
+<button class="gbtn" id="gin"><svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.9-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>الدخول بحساب جوجل</button>
+<div class="note" id="demo" hidden>وضع تجريبي: ضع إعدادات Firebase لتفعيل جوجل الحقيقي.</div></div></section>
+<section class="view" id="home"><div class="card tilt"><div class="clock3d" id="hc"></div><h1 id="hi"></h1><p>20 سؤالًا · 30 ثانية لكل سؤال · النجاح من 50%</p><button class="btn btn-g" id="sd">ابدأ أسئلة اليوم</button><p id="dn" style="margin:12px 0 0"></p></div><div class="faith"><h2>كن أثرًا يبقى</h2><p>الأثر الطيب حياةٌ ثانية. كل علمٍ تنشره، وكلمةٍ طيبة تقولها، وخيرٍ تدلّ عليه، يبقى أثره في الناس ويُكتب لك أجره بعد رحيلك. فاجعل لك في كل يوم أثرًا صالحًا في أهلك وبلدك ومجتمعك، ولو كان صغيرًا.</p><div class="ev" id="ev"></div></div></section>
+<section class="view" id="friday"><div class="card tilt"><div class="clock3d" id="fc"></div><h1 class="gold">أسئلة الجمعة الذهبية</h1><p id="fm"></p><button class="btn btn-gold" id="sf">ابدأ اختبار الجمعة</button></div></section>
+<section class="view" id="quiz"><div class="card tilt" id="qc"></div></section>
+<section class="view" id="res"><div class="card" id="rc"></div></section>
+<section class="view" id="certs"><h2 style="margin-bottom:12px">شهاداتي</h2><div id="cl"></div></section>
+</main>
+<div id="tt" hidden></div>
+<div id="md" hidden><div class="mc"><div class="mi">🕌</div><h2>انتظر إلى يوم الجمعة</h2><p>أحيانا الله وإياكم</p><button class="btn btn-gold" id="mx">حاضر</button></div></div>
+<nav id="nav" hidden><a data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>الرئيسية</a>
+<a data-v="certs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/></svg>شهاداتي</a>
+<a data-v="friday" id="fn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>الجمعة الذهبية</a></nav>
+<script src="logo.js"></script><script src="certs.js"></script><script src="certgen.js"></script>
+<script>
+/* ===== ضع إعدادات Firebase هنا (Authentication: Google + Firestore) ===== */
+const CFG={apiKey:"AIzaSyCd1p0OcxexJs2tRGFw9ZxqrtNK0tXn5yM",authDomain:"aather-4b2d9.firebaseapp.com",projectId:"aather-4b2d9",storageBucket:"aather-4b2d9.firebasestorage.app",messagingSenderId:"835131639030",appId:"1:835131639030:web:9ea0f807064388d8d8d8d7"};
+const DEMO=CFG.apiKey.startsWith("YOUR"),TZ="Africa/Cairo",SECS=30,PASS=.5;
+const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>"]/g,c=>"&#"+c.charCodeAt(0)+";");
+let user,db,qz,N=20,Q={};
+const now=()=>new Date(),dkey=()=>now().toLocaleDateString("en-CA",{timeZone:TZ}),isFri=()=>now().toLocaleDateString("en-US",{timeZone:TZ,weekday:"long"})==="Friday";
+const clock=(sec)=>`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#fcf9f0" stroke="#b3924a" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="#2b6b55" stroke-width="1.5" stroke-dasharray="2 6"/><path class="hand" d="M50 50V24" stroke="#22302a" stroke-width="4" stroke-linecap="round"/><path class="hand s" d="M50 50V16" stroke="#3f8a86" stroke-width="2.5" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#b3924a"/></svg>`;
+["hc","fc"].forEach(i=>$("#"+i).innerHTML=clock());
+/* التخزين: Firestore أو localStorage في الوضع التجريبي */
+const L=k=>"a:"+user.uid+k,LJ=k=>JSON.parse(localStorage[L(k)]||"null"),col=()=>db.collection("users").doc(user.uid).collection("attempts");
+function toast(m){const t=$("#tt");t.textContent=m;t.hidden=false;clearTimeout(t.h);t.h=setTimeout(()=>t.hidden=true,9000)}
+addEventListener("unhandledrejection",e=>toast("حدث خطأ: "+((e.reason&&(e.reason.message||e.reason.code))||e.reason)));
+const DBERR=e=>toast("تعذّر الاتصال بقاعدة البيانات ("+(e.code||e.message)+") — أنشئ Firestore والصق القواعد.");
+const S={async get(id){if(!DEMO)try{const d=await col().doc(id).get();if(d.exists)return d.data()}catch(e){DBERR(e)}return LJ(id)},
+async set(id,v){localStorage[L(id)]=JSON.stringify(v);if(!DEMO)try{await col().doc(id).set(v)}catch(e){DBERR(e)}},
+async list(){let r=[];if(!DEMO)try{r=(await col().get()).docs.map(d=>d.data())}catch(e){DBERR(e)}Object.keys(localStorage).filter(k=>k.startsWith("a:"+user.uid)).forEach(k=>{const v=JSON.parse(localStorage[k]);if(!r.some(x=>x.type===v.type&&x.date===v.date))r.push(v)});return r}};
+function show(v){document.querySelectorAll(".view").forEach(e=>e.classList.toggle("on",e.id===v));document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));scrollTo(0,0);if(v==="home")home();if(v==="friday")fri();if(v==="certs")certs()}
+document.querySelectorAll("#nav a").forEach(a=>a.onclick=()=>{if(qz&&qz.live)return;if(a.dataset.v==="friday"&&!isFri())return $("#md").hidden=false;show(a.dataset.v)});$("#mx").onclick=()=>$("#md").hidden=true;
+async function home(){$("#hi").textContent="أهلًا، "+user.displayName.split(" ")[0];const d=await S.get("daily-"+dkey());$("#sd").disabled=!!d;$("#dn").textContent=d?(d.passed?"أتممت اختبار اليوم ونلت شهادتك ✓ — عُد غدًا":"أتممت اختبار اليوم — عُد غدًا بإذن الله"):""}
+async function fri(){const open=isFri(),d=await S.get("friday-"+dkey());$("#fn").classList.toggle("lock",!open);$("#sf").hidden=!open||!!d;$("#fm").textContent=open?(d?"أتممت اختبار هذه الجمعة — بارك الله فيك":"الاختبار مفتوح الآن حتى منتصف الليل (بتوقيت القاهرة). 10 أسئلة عن فضل الجمعة."):"الاختبار يُفتح يوم الجمعة فقط، من 12 صباحًا حتى 12 منتصف الليل (بتوقيت القاهرة)."}
+$("#sd").onclick=()=>start("daily");$("#sf").onclick=()=>start("friday");
+async function start(type){if(type==="friday"&&!isFri())return;if(await S.get(type+"-"+dkey()))return;
+ N=type==="friday"?10:20;Q[type]=Q[type]||await (await fetch(type+"-questions.json")).json();
+ let pool=[...Q[type]].sort(()=>Math.random()-.5),qs=[];while(qs.length<N)qs.push(...pool.slice(0,N-qs.length));
+ qz={type,qs,i:0,score:0,live:true};show("quiz");ask()}
+function ask(){const q=qz.qs[qz.i];qz.t=SECS;qz.lock=false;const C=2*Math.PI*28;
+ $("#qc").innerHTML=`<div class="qtop"><span class="tag">${q.c}</span><span>${qz.i+1} / ${N}</span><div class="timer"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="none" stroke="#e5dfcf" stroke-width="5"/><circle id="ring" cx="32" cy="32" r="28" fill="none" stroke="var(--g)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${C}" transform="rotate(-90 32 32)" style="transition:stroke-dashoffset 1s linear"/></svg><b id="tn">${SECS}</b></div></div><div class="bar"><i style="width:${qz.i/N*100}%"></i></div><div class="q">${q.q}</div>${q.o.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}`;
+ document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.i));
+ clearInterval(qz.h);qz.h=setInterval(()=>{qz.t--;$("#tn").textContent=qz.t;$("#ring").style.strokeDashoffset=C*(1-qz.t/SECS);$("#tn").style.color=qz.t<=8?"#b85c55":"";if(qz.t<=0)pick(-1)},1000)}
+function pick(i){if(qz.lock)return;qz.lock=true;clearInterval(qz.h);const q=qz.qs[qz.i],bs=document.querySelectorAll(".opt");bs[q.a].classList.add("ok");if(i>=0&&i!==q.a)bs[i].classList.add("bad");if(i===q.a)qz.score++;
+ setTimeout(()=>{++qz.i<N?ask():finish()},1000)}
+async function finish(){qz.live=false;const d=now(),pct=Math.round(qz.score/N*100),passed=qz.score/N>=PASS;
+ const rec={type:qz.type,date:dkey(),score:qz.score,total:N,pct,passed,name:user.displayName,dateStr:d.toLocaleDateString("ar-EG",{timeZone:TZ,weekday:"long",year:"numeric",month:"long",day:"numeric"}),timeStr:d.toLocaleTimeString("ar-EG",{timeZone:TZ,hour:"2-digit",minute:"2-digit"})};
+ await S.set(qz.type+"-"+rec.date,rec);show("res");
+ $("#rc").innerHTML=`<div class="big">${qz.score} / ${N}</div><p>نسبة النجاح ${pct}%</p>`+(passed?`<h2>🎉 مبارك! اجتزت الاختبار</h2><div class="cert"><img id="ci"></div><button class="btn btn-g" id="dl">حفظ الشهادة PNG</button>`:`<h2>لم تبلغ 50% هذه المرة</h2><p>حاول غدًا بإذن الله، العلم يُبنى يومًا بيوم.</p>`)+`<p style="margin-top:14px"><button class="btn btn-g" onclick="show('home')">الرئيسية</button></p>`;
+ if(passed){const u=await makeCert(rec);$("#ci").src=u;$("#dl").onclick=()=>dl(u,rec)}}
+function dl(u,r){const a=document.createElement("a");a.href=u;a.download=`athar-${r.type}-${r.date}.png`;a.click()}
+async function certs(){const l=(await S.list()).filter(r=>r.passed).sort((a,b)=>b.date.localeCompare(a.date));const box=$("#cl");box.innerHTML=l.length?"":`<div class="card"><p>لا شهادات بعد. أتمم اختبار اليوم بنسبة 50% أو أكثر لتُنشأ شهادتك تلقائيًا.</p></div>`;
+ for(const r of l){const c=document.createElement("div");c.className="card cert tilt";c.innerHTML=`<b>${r.type==="friday"?"شهادة الجمعة الذهبية":"شهادة التحدي اليومي"}</b><br><small>${esc(r.dateStr)}</small><img>`;box.append(c);const u=await makeCert(r);c.querySelector("img").src=u;c.querySelector("img").onclick=()=>dl(u,r)}}
+/* تأثير ثلاثي الأبعاد عند تحريك المؤشر */
+document.addEventListener("pointermove",e=>{const c=e.target.closest(".tilt");document.querySelectorAll(".tilt").forEach(t=>{if(t!==c)t.style.transform=""});if(!c)return;const r=c.getBoundingClientRect();c.style.transform=`rotateY(${((e.clientX-r.left)/r.width-.5)*10}deg) rotateX(${-((e.clientY-r.top)/r.height-.5)*8}deg)`});
+const EV=[["آية","﴿إِنَّا نَحْنُ نُحْيِي الْمَوْتَىٰ وَنَكْتُبُ مَا قَدَّمُوا وَآثَارَهُمْ﴾","سورة يس: 12"],["حديث","«إذا مات ابن آدم انقطع عمله إلا من ثلاث: صدقة جارية، أو علم يُنتفع به، أو ولد صالح يدعو له»","رواه مسلم"],["آية","﴿وَاجْعَل لِّي لِسَانَ صِدْقٍ فِي الْآخِرِينَ﴾","سورة الشعراء: 84"],["حديث","«من دعا إلى هدى كان له من الأجر مثل أجور من تبعه لا ينقص ذلك من أجورهم شيئًا»","رواه مسلم"],["آية","﴿فَأَمَّا الزَّبَدُ فَيَذْهَبُ جُفَاءً وَأَمَّا مَا يَنفَعُ النَّاسَ فَيَمْكُثُ فِي الْأَرْضِ﴾","سورة الرعد: 17"],["حديث","«من سنّ في الإسلام سنّة حسنة فله أجرها وأجر من عمل بها بعده من غير أن ينقص من أجورهم شيء»","رواه مسلم"],["آية","﴿وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ﴾","سورة المائدة: 2"],["حديث","«أحبّ الناس إلى الله أنفعهم للناس»","رواه الطبراني وحسّنه الألباني"],["حديث","«بلّغوا عني ولو آية»","رواه البخاري"],["حديث","«إن قامت الساعة وفي يد أحدكم فسيلة، فإن استطاع ألّا تقوم حتى يغرسها فليغرسها»","رواه أحمد وصححه الألباني"]];
+$("#ev").innerHTML=EV.map(e=>`<div class="e tilt"><span class="k">${e[0]}</span><div class="t${e[0]==="آية"?" v":""}">${e[1]}</div><small>${e[2]}</small></div>`).join("");
+/* الدخول + مشهد ثلاثي الأبعاد */
+function theme(){const f=isFri();document.documentElement.classList.toggle("gold",f);$("#hl").src=f?LOGO_GOLD:LOGO;$("#ls").src=f?LOGO_GOLD:LOGO_LOGIN}theme();setInterval(theme,60000);
+for(let i=0;i<22;i++){const p=document.createElement("i");p.style.cssText=`left:${Math.random()*100}%;animation-delay:${-Math.random()*12}s;animation-duration:${9+Math.random()*8}s;width:${3+Math.random()*5}px;height:${3+Math.random()*5}px`;$("#stars").append(p)}
+$("#lw").addEventListener("pointermove",e=>{const r=innerWidth/2,h=innerHeight/2;$("#scene").style.transform=`rotateY(${(e.clientX-r)/r*18}deg) rotateX(${-(e.clientY-h)/h*12}deg)`});
+function signed(u){document.body.classList.toggle("lg",!u);user=u;$("#out").hidden=$("#nav").hidden=!u;if(u)show("home");else show("login")}
+if(DEMO){$("#demo").hidden=false;$("#gin").onclick=()=>{const n=prompt("اسمك (تجريبي):");if(n)signed({uid:"demo",displayName:n})};$("#out").onclick=()=>signed(null);show("login")}
+else{firebase.initializeApp(CFG);db=firebase.firestore();const A=firebase.auth();$("#gin").onclick=()=>A.signInWithPopup(new firebase.auth.GoogleAuthProvider());$("#out").onclick=()=>A.signOut();A.onAuthStateChanged(u=>signed(u&&{uid:u.uid,displayName:u.displayName||"طالب علم"}))}
+</script></body></html>
